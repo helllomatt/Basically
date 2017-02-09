@@ -1,0 +1,18 @@
+{
+    "name": "helllomatt/basically",
+    "description": "Barebones CRUD class.",
+    "version": "0.1",
+    "keywords": ["crud", "sanitization", "validation", "forms"],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Basically\\": "src/"
+        }
+    },
+    "require": {
+        "helllomatt/db": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5"
+    }
+}

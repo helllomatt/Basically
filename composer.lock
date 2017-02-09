@@ -1,0 +1,61 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "33b45b3d66c9eb218332080b4ec71d0f",
+    "packages": [
+        {
+            "name": "helllomatt/db",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/helllomatt/Database.git",
+                "reference": "19afd9e99e6adea350562bf14901839e6e04ae71"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/helllomatt/Database/zipball/19afd9e99e6adea350562bf14901839e6e04ae71",
+                "reference": "19afd9e99e6adea350562bf14901839e6e04ae71",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "helllomatt",
+                    "email": "me@helllomatt.com",
+                    "homepage": "http://helllomatt.com"
+                }
+            ],
+            "description": "Basic MySql database library",
+            "keywords": [
+                "database",
+                "db",
+                "library",
+                "mysql"
+            ],
+            "time": "2017-02-09T04:46:15+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
