@@ -145,7 +145,7 @@ class CRUD {
         return $var;
     }
 
-    public static function insert(\Database\DB $db = null, $table = '', array $data = []) {
+    public static function insert(\Double\DB $db = null, $table = '', array $data = []) {
         if ($table == '') throw new Exception('no insert table given');
         if (empty($data)) throw new Exception('no insert data given');
 
@@ -162,7 +162,7 @@ class CRUD {
         return $query->id();
     }
 
-    public static function update(\Database\DB $db = null, $table = '', array $data = [], array $where = []) {
+    public static function update(\Double\DB $db = null, $table = '', array $data = [], array $where = []) {
         if ($table == '') throw new Exception('no update table given');
         if (empty($data)) throw new Exception('no update data given');
         if (empty($where)) throw new Exception('no update where clause given');
@@ -184,7 +184,7 @@ class CRUD {
         return true;
     }
 
-    public static function delete(\Database\DB $db = null, $table = '', array $where = []) {
+    public static function delete(\Double\DB $db = null, $table = '', array $where = []) {
         if ($table == '') throw new Exception('no delete table given');
         if (empty($where)) throw new Exception('no delete where clause given');
 

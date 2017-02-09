@@ -2,7 +2,7 @@
 
 namespace Basically;
 
-use Database\DB;
+use Double\DB;
 
 class CRUDTest extends \PHPUnit_Framework_TestCase {
     private static $table = 'sometable';
