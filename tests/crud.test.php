@@ -203,4 +203,29 @@ class CRUDTest extends \PHPUnit_Framework_TestCase {
             'data'       => [':id' => 1]
         ]);
     }
+
+    public function testErrorMessages() {
+        $errors = (new Errors)
+            ->setWhenShortString('The string is too short!', 100);
+
+        try {
+            CRUD::sanitize('a', ['string', 'strlen' => ['short' => 2]], $errors);
+        } catch (\Exception $e) {
+            $this->assertEquals('The string is too short!', $e->getMessage());
+            $this->assertEquals(100, $e->getCode());
+        }
+    }
+
+    public function testMultipleErrorMessages() {
+        $emailE = (new Errors)->setWhenMissingRequired('What is your email?');
+        $nameE = (new Errors)->setWhenBadName('That cannot be your name.');
+
+        try {
+            CRUD::sanitize(null, ['email', 'required'], $emailE);
+            CRUD::sanitize('name', ['name', 'required-full'], $nameE);
+        } catch (\Exception $e) {
+            $this->assertEquals('What is your email?', $e->getMessage());
+            $this->assertEquals(0, $e->getCode());
+        }
+    }
 }

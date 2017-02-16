@@ -6,19 +6,19 @@ use DateTime;
 use Exception;
 
 class CRUD {
-    private static function validateString($var, $against) {
+    private static function validateString($var, $against, $errors) {
         if (in_array('string', $against)) {
-            if (!is_string($var)) throw new Exception('not a string');
+            if (!is_string($var)) throw new Exception($errors->notString, $errors->notStringCode);
             if (array_key_exists('strlen', $against)) {
                 if (isset($against['strlen']['short'])) {
                     if (strlen($var) < $against['strlen']['short']) {
-                        throw new Exception('string too short');
+                        throw new Exception($errors->shortString, $errors->shortStringCode);
                     }
                 }
 
                 if (isset($against['strlen']['long'])) {
                     if (strlen($var) > $against['strlen']['long']) {
-                        throw new Exception('string too long');
+                        throw new Exception($errors->longString, $errors->longStringCode);
                     }
                 }
             }
@@ -30,7 +30,7 @@ class CRUD {
             if (array_key_exists('match', $against)) {
                 $regex = '/[^'.$against['match'].']/i';
                 if (preg_match($regex, $var)) {
-                    throw new Exception('invalid string match');
+                    throw new Exception($errors->stringMatch, $errors->stringMatchCode);
                 }
             }
 
@@ -42,23 +42,23 @@ class CRUD {
         return $var;
     }
 
-    private static function validateEmail($var, $against) {
+    private static function validateEmail($var, $against, $errors) {
         if (in_array('email', $against) && !filter_var($var, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception('bad email');
+            throw new Exception($errors->badEmail, $errors->badEmailCode);
         }
 
         return $var;
     }
 
-    private static function validateNumber($var, $against) {
+    private static function validateNumber($var, $against, $errors) {
         if (in_array('number', $against) && !is_numeric($var)) {
-            throw new Exception('not a number');
+            throw new Exception($errors->notNumber, $errors->notNumberCode);
         }
 
         return $var;
     }
 
-    private static function validateDate($var, $against) {
+    private static function validateDate($var, $against, $errors) {
         if (in_array('date', $against)) {
             $format = 'Y-m-d';
             if (array_key_exists('date_format', $against)) {
@@ -66,7 +66,7 @@ class CRUD {
             }
 
             $var = (new DateTime($var))->format($format);
-            if (!$var) throw new Exception('bad date');
+            if (!$var) throw new Exception($errors->badDate, $errors->badDateCode);
         }
 
         return $var;
@@ -80,7 +80,7 @@ class CRUD {
         return $var;
     }
 
-    private static function getName($var, $against) {
+    private static function getName($var, $against, $errors) {
         if (in_array('name', $against)) {
             $var = trim(static::sanitize($var, ['string', 'match' => 'a-z \'\-', 'xss', 'notags']));
 
@@ -91,7 +91,7 @@ class CRUD {
                 $first = implode(' ', $parts);
                 return ['first' => $first, 'last' => $last];
             } elseif (in_array('required-full', $against)) {
-                throw new Exception('first and last name required.');
+                throw new Exception($errors->badName, $errors->badNameCode);
             } else {
                 return ['first' => $var, 'last' => ''];
             }
@@ -100,19 +100,19 @@ class CRUD {
         return $var;
     }
 
-    private static function validateRequired($var, $against) {
+    private static function validateRequired($var, $against, $errors) {
         if (in_array('required', $against)) {
             if (($var == '' || $var == null) && !is_bool($var)) {
-                throw new Exception('missing required field.');
+                throw new Exception($errors->missingRequired, $errors->missingRequiredCode);
             }
         }
 
         return $var;
     }
 
-    private static function validateBoolean($var, $against) {
+    private static function validateBoolean($var, $against, $errors) {
         if (in_array('boolean', $against) && !is_bool($var)) {
-            throw new Exception('not a boolean');
+            throw new Exception($errors->notBoolean, $errors->notBooleanCode);
         }
 
         return $var;
@@ -130,24 +130,26 @@ class CRUD {
         return ['columns' => $cols, 'values' => $values];
     }
 
-    public static function sanitize($var, array $against = []) {
+    public static function sanitize($var, array $against = [], Errors $errors = null) {
         if (empty($against)) return $var;
+        if (!$errors) $errors = new Errors;
 
-        $var = static::validateRequired($var, $against);
-        $var = static::validateEmail($var, $against);
-        $var = static::validateString($var, $against);
-        $var = static::validateNumber($var, $against);
-        $var = static::validateBoolean($var, $against);
-        $var = static::validateDate($var, $against);
+        $var = static::validateRequired($var, $against, $errors);
+        $var = static::validateEmail($var, $against, $errors);
+        $var = static::validateString($var, $against, $errors);
+        $var = static::validateNumber($var, $against, $errors);
+        $var = static::validateBoolean($var, $against, $errors);
+        $var = static::validateDate($var, $against, $errors);
         $var = static::sanitizeXSS($var, $against);
-        $var = static::getName($var, $against);
+        $var = static::getName($var, $against, $errors);
 
         return $var;
     }
 
-    public static function insert(\Double\DB $db = null, $table = '', array $data = []) {
-        if ($table == '') throw new Exception('no insert table given');
-        if (empty($data)) throw new Exception('no insert data given');
+    public static function insert(\Double\DB $db = null, $table = '', array $data = [], Errors $errors = null) {
+        if (!$errors) $errors = new Errors;
+        if ($table == '') throw new Exception($errors->noTable, $errors->noTableCode);
+        if (empty($data)) throw new Exception($errors->noData, $errors->noDataCode);
 
         $query = $db->query('insert')
                     ->into($table)
@@ -156,16 +158,17 @@ class CRUD {
                     ->execute();
 
         if ($query->failed()) {
-            throw new Exception('insert failed');
+            throw new Exception($errors->insertFailed, $errors->insertFailedCode);
         }
 
         return $query->id();
     }
 
-    public static function update(\Double\DB $db = null, $table = '', array $data = [], array $where = []) {
-        if ($table == '') throw new Exception('no update table given');
-        if (empty($data)) throw new Exception('no update data given');
-        if (empty($where)) throw new Exception('no update where clause given');
+    public static function update(\Double\DB $db = null, $table = '', array $data = [], array $where = [], Errors $errors = null) {
+        if (!$errors) $errors = new Errors;
+        if ($table == '') throw new Exception($errors->noTable, $errors->noTableCode);
+        if (empty($data)) throw new Exception($errors->noData, $errors->noDataCode);
+        if (empty($where)) throw new Exception($errors->noClause, $errors->noClauseCode);
 
         $query = $db->query('update')
             ->table($table);
@@ -178,15 +181,16 @@ class CRUD {
             ->execute();
 
         if ($query->failed()) {
-            throw new Exception('update failed');
+            throw new Exception($errors->updateFailed, $errors->updateFailedCode);
         }
 
         return true;
     }
 
-    public static function delete(\Double\DB $db = null, $table = '', array $where = []) {
-        if ($table == '') throw new Exception('no delete table given');
-        if (empty($where)) throw new Exception('no delete where clause given');
+    public static function delete(\Double\DB $db = null, $table = '', array $where = [], Errors $errors = null) {
+        if (!$errors) $errors = new Errors;
+        if ($table == '') throw new Exception($errors->noTable, $errors->noTableCode);
+        if (empty($where)) throw new Exception($errors->noClause, $errors->noClauseCode);
 
         $query = $db->query('delete')
             ->from($table)
@@ -194,7 +198,7 @@ class CRUD {
             ->execute();
 
         if ($query->failed()) {
-            throw new Exception('delete failed');
+            throw new Exception($errors->deleteFailed, $errors->deleteFailedCode);
         }
 
         return true;

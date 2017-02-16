@@ -1,7 +1,7 @@
 {
     "name": "helllomatt/basically",
     "description": "Barebones CRUD class.",
-    "version": "0.2",
+    "version": "0.3",
     "keywords": ["crud", "sanitization", "validation", "forms"],
     "license": "MIT",
     "autoload": {
