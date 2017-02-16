@@ -38,6 +38,8 @@ class Errors {
     public $deleteFailed = 'delete failed';
     public $deleteFailedCode = 0;
 
+    public $showQueryError = false;
+
     public function setWhenNotString($message = '', $code = 0) {
         $this->notString = $message;
         $this->notStringCode = $code;
@@ -116,21 +118,24 @@ class Errors {
         return $this;
     }
 
-    public function setWhenInsertFailed($message = '', $code = 0) {
+    public function setWhenInsertFailed($message = '', $code = 0, $showQueryError = false) {
         $this->insertFailed = $message;
         $this->insertFailedCode = $code;
+        $this->showQueryError = $showQueryError;
         return $this;
     }
 
-    public function setWhenUpdateFailed($message = '', $code = 0) {
+    public function setWhenUpdateFailed($message = '', $code = 0, $showQueryError = false) {
         $this->updateFailed = $message;
         $this->updateFailedCode = $code;
+        $this->showQueryError = $showQueryError;
         return $this;
     }
 
-    public function setWhenDeleteFailed($message = '', $code = 0) {
+    public function setWhenDeleteFailed($message = '', $code = 0, $showQueryError = false) {
         $this->deleteFailed = $message;
         $this->deleteFailedCode = $code;
+        $this->showQueryError = $showQueryError;
         return $this;
     }
 }

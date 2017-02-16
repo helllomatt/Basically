@@ -158,6 +158,7 @@ class CRUD {
                     ->execute();
 
         if ($query->failed()) {
+            if ($errors->showQueryError) print_r($query->failed_because());
             throw new Exception($errors->insertFailed, $errors->insertFailedCode);
         }
 
@@ -181,6 +182,7 @@ class CRUD {
             ->execute();
 
         if ($query->failed()) {
+            if ($errors->showQueryError) print_r($query->failed_because());
             throw new Exception($errors->updateFailed, $errors->updateFailedCode);
         }
 
@@ -198,6 +200,7 @@ class CRUD {
             ->execute();
 
         if ($query->failed()) {
+            if ($errors->showQueryError) print_r($query->failed_because());
             throw new Exception($errors->deleteFailed, $errors->deleteFailedCode);
         }
 
